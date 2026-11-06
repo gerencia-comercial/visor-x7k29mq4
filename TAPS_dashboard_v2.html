@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>TAPS Occidente · Referente interactivo · Octubre 2026</title>
+<style>
+  :root{
+    --coke:#E4002B; --coke-dark:#A50020; --coke-light:#FCE8EB;
+    --ink:#1b1b1b; --gray:#6b7280; --line:#e5e7eb; --bg:#f6f6f7;
+    --green:#0e9f6e; --amber:#d97706;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Segoe UI", Arial, Helvetica, sans-serif; background:var(--bg); color:var(--ink); padding:18px;}
+  .wrap{max-width:1240px; margin:0 auto;}
+  /* Header */
+  header{background:linear-gradient(100deg,var(--coke) 0%,var(--coke-dark) 100%); border-radius:14px; color:#fff; padding:18px 24px; display:flex; align-items:center; gap:18px; box-shadow:0 4px 14px rgba(228,0,43,.25);}
+  .logo{display:flex; flex-direction:column; line-height:1; border-right:1px solid rgba(255,255,255,.4); padding-right:18px;}
+  .logo .coca{font-style:italic; font-weight:800; font-size:22px; letter-spacing:.5px;}
+  .logo .femsa{font-weight:700; font-size:13px; letter-spacing:4px; margin-top:3px;}
+  header h1{font-size:21px; font-weight:700;}
+  header p{font-size:13px; opacity:.92; margin-top:4px;}
+  header p b{background:rgba(255,255,255,.18); padding:1px 8px; border-radius:20px;}
+  /* Selector */
+  .selector{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:16px 0;}
+  .selector .lbl{font-size:13px; font-weight:600; color:var(--gray); text-transform:uppercase; letter-spacing:.5px;}
+  .pill{border:2px solid var(--coke); background:#fff; color:var(--coke); border-radius:22px; padding:7px 16px; font-size:14px; font-weight:600; cursor:pointer; transition:all .25s;}
+  .pill:hover{background:var(--coke-light); transform:translateY(-2px);}
+  .pill.active{background:var(--coke); color:#fff; box-shadow:0 3px 10px rgba(228,0,43,.35);}
+  select{font-size:14px; padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:#fff; cursor:pointer;}
+  /* KPI cards */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
+  .kpi{background:#fff; border-radius:12px; padding:14px 16px; border-top:4px solid var(--coke); box-shadow:0 2px 8px rgba(0,0,0,.06); transition:transform .3s; animation:pop .45s ease;}
+  .kpi.neutral{border-top-color:#9ca3af;}
+  .kpi.good{border-top-color:var(--green);}
+  .kpi.bad{border-top-color:var(--coke);}
+  .kpi .k-label{font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--gray); font-weight:600;}
+  .kpi .k-val{font-size:30px; font-weight:800; margin-top:4px; font-variant-numeric:tabular-nums;}
+  .kpi .k-val small{font-size:15px; font-weight:600; color:var(--gray);}
+  .kpi .k-sub{font-size:12px; color:var(--gray); margin-top:3px;}
+  .kpi .up{color:var(--green);} .kpi .down{color:var(--coke);}
+  @keyframes pop{0%{transform:scale(.96); opacity:.4;}100%{transform:scale(1); opacity:1;}}
+  /* Panels */
+  .grid2{display:grid; grid-template-columns:1.25fr .95fr; gap:14px; margin-bottom:14px;}
+  .panel{background:#fff; border-radius:12px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .panel h2{font-size:15px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .panel h2 .dot{width:10px; height:10px; border-radius:50%; background:var(--coke); display:inline-block;}
+  /* Chart */
+  .chart-toggle{display:flex; gap:6px; margin-bottom:12px;}
+  .chart-toggle button{border:1px solid var(--line); background:#f3f4f6; border-radius:8px; padding:5px 12px; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--gray);}
+  .chart-toggle button.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  #chart{position:relative;}
+  .bar-row{display:flex; align-items:center; height:30px; margin-bottom:5px; cursor:pointer; position:relative; transition:transform .5s cubic-bezier(.22,1,.36,1); border-radius:6px;}
+  .bar-row:hover{background:#fafafa;}
+  .bar-row.sel{background:var(--coke-light);}
+  .bar-name{width:175px; font-size:12.5px; font-weight:600; text-align:right; padding-right:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bar-row.sel .bar-name{color:var(--coke);}
+  .bar-track{flex:1; position:relative; height:22px;}
+  .bar{height:100%; border-radius:5px; position:relative; background:#c4c9d1; transition:width .7s cubic-bezier(.22,1,.36,1), background .3s; min-width:2px;}
+  .bar.foco{background:linear-gradient(90deg,var(--coke),#ff5c73);}
+  .bar.over{background:linear-gradient(90deg,#0e9f6e,#34d399);}
+  .bar-val{position:absolute; left:calc(100% + 6px); top:50%; transform:translateY(-50%); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .goal-line{position:absolute; top:-4px; bottom:-4px; width:0; border-left:2px dashed var(--ink); z-index:2; pointer-events:none;}
+  .goal-tag{position:absolute; top:-19px; transform:translateX(-50%); font-size:10.5px; font-weight:700; background:var(--ink); color:#fff; padding:1px 7px; border-radius:8px; white-space:nowrap;}
+  .legend{display:flex; gap:16px; font-size:11.5px; color:var(--gray); margin-top:26px; flex-wrap:wrap;}
+  .legend span{display:flex; align-items:center; gap:5px;}
+  .sw{width:12px; height:12px; border-radius:3px; display:inline-block;}
+  /* Table */
+  .tbl-tools{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
+  .tbl-tools input[type=text]{flex:1; min-width:180px; padding:7px 12px; border:1px solid var(--line); border-radius:9px; font-size:13.5px;}
+  .tbl-tools label{font-size:13px; color:var(--gray); display:flex; gap:6px; align-items:center; cursor:pointer;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{background:var(--ink); color:#fff; padding:8px 8px; text-align:right; font-size:12px; cursor:pointer; user-select:none; white-space:nowrap;}
+  thead th:first-child{text-align:left; border-radius:8px 0 0 0;}
+  thead th:last-child{border-radius:0 8px 0 0; text-align:center;}
+  thead th .arrow{font-size:9px; margin-left:3px;}
+  tbody td{padding:7px 8px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums;}
+  tbody td:first-child{text-align:left; font-weight:600;}
+  tbody tr{cursor:pointer; transition:background .2s;}
+  tbody tr:hover{background:#fafafa;}
+  tbody tr.sel{background:var(--coke-light);}
+  tbody tr.foco td:first-child::before{content:"●"; color:var(--coke); margin-right:6px; font-size:9px;}
+  tbody tr.total td{background:#f3f4f6; font-weight:800; border-top:2px solid var(--ink);}
+  .var-pos{color:var(--green); font-weight:700;} .var-neg{color:var(--coke); font-weight:700;}
+  .approx{color:var(--amber); font-size:10px; vertical-align:super;}
+  /* Causes & practices */
+  .causa-block{border-left:4px solid var(--coke); background:#fdf2f4; border-radius:8px; padding:12px 14px; margin-bottom:10px;}
+  .causa-block h3{font-size:14px; color:var(--coke-dark);}
+  .causa-block p{font-size:13px; margin-top:5px; line-height:1.45;}
+  .causa-block p b{color:var(--ink);}
+  .tag{display:inline-block; background:var(--coke); color:#fff; font-size:10px; font-weight:700; border-radius:8px; padding:1px 7px; margin-right:5px; text-transform:uppercase; letter-spacing:.4px;}
+  .tag.gray{background:var(--gray);}
+  .practices li{font-size:13px; margin:7px 0 7px 4px; list-style:none; line-height:1.4;}
+  .practices li::before{content:"✓"; color:var(--green); font-weight:800; margin-right:7px;}
+  .growers{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+  .grower{background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:7px 12px; font-size:12.5px; font-weight:700; color:#065f46;}
+  .grower small{display:block; font-weight:600; color:var(--green); font-size:11px;}
+  .muted{font-size:12.5px; color:var(--gray); line-height:1.5;}
+  /* Footer notes */
+  footer{background:#fff; border-radius:12px; padding:14px 18px; box-shadow:0 2px 8px rgba(0,0,0,.06); margin-top:4px;}
+  footer h2{font-size:13px; font-weight:700; margin-bottom:6px; color:var(--coke-dark);}
+  footer p{font-size:11.5px; color:var(--gray); line-height:1.55; margin-bottom:4px;}
+  @media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="coca">Coca-Cola</span><span class="femsa">FEMSA</span></div>
+    <div>
+      <h1>Clientes Ganando y Cumpliendo TAPS · Occidente</h1>
+      <p>Agencias con cumplimiento &lt; 15% en foco · Octubre 2026 · <b>Meta noviembre: 32%</b></p>
+    </div>
+  </header>
+
+  <div class="selector">
+    <span class="lbl">Agencia foco:</span>
+    <div id="focoPills" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    <span class="lbl" style="margin-left:8px;">Todas:</span>
+    <select id="agencySelect"></select>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2><span class="dot"></span>Ranking de agencias vs meta</h2>
+      <div class="chart-toggle" id="chartToggle">
+        <button data-metric="oct" class="active">% Gana Octubre</button>
+        <button data-metric="sep">% Gana Septiembre</button>
+        <button data-metric="var">Variación (pp)</button>
+      </div>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><i class="sw" style="background:linear-gradient(90deg,#E4002B,#ff5c73);"></i>Agencia foco</span>
+        <span><i class="sw" style="background:#c4c9d1;"></i>Resto de agencias</span>
+        <span><i class="sw" style="background:linear-gradient(90deg,#0e9f6e,#34d399);"></i>Sobre la meta (≥ 32%)</span>
+        <span style="border-left:2px dashed #1b1b1b; padding-left:6px;">Meta noviembre: 32%</span>
+        <span><span class="approx">≈</span> Oct truncado al entero (fuente: tabla general)</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2><span class="dot"></span>Causas · mesa de trabajo <span id="causaAgency" style="color:var(--coke);"></span></h2>
+      <div id="causas"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:14px;">
+    <h2><span class="dot"></span>Tabla de agencias · ordenable y filtrable</h2>
+    <div class="tbl-tools">
+      <input type="text" id="tblFilter" placeholder="Filtrar por agencia…">
+      <label><input type="checkbox" id="tblFocoOnly"> Solo agencias foco</label>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="tbl">
+        <thead><tr id="tblHead"></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="dot"></span>Lo que sí funciona · buenas prácticas de las agencias que crecieron vs septiembre</h2>
+    <div class="growers">
+      <div class="grower">La Mesa 38%<small>+17,8 pp vs Sep</small></div>
+      <div class="grower">Melgar 22%<small>+12,1 pp vs Sep</small></div>
+      <div class="grower">Putumayo 22%<small>+10,5 pp vs Sep</small></div>
+      <div class="grower">Buenaventura 22%<small>+6,8 pp vs Sep</small></div>
+    </div>
+    <ul class="practices">
+      <li>Seguimiento diario con compromiso por ruta, AM y PM.</li>
+      <li>Uso de la herramienta Advisor (súper importante).</li>
+      <li>Foco en clientes a &lt;5 cajas y sin banner; la última semana, solo banner.</li>
+      <li>Revisión 360 del plan en la reunión matinal.</li>
+      <li>Fuerza de ventas conectada con los clientes, motivándolos con Juntos.</li>
+      <li>Seguimiento constante: así llegan al cumplimiento requerido.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <h2>Notas de datos</h2>
+    <p>· En la tabla general de agencias las columnas venían rotadas: la etiquetada «Gana Sep» corresponde a <b>octubre</b> y «%Gana Par» a <b>septiembre</b>. En este tablero ya están corregidas. Para las agencias no foco, el % de octubre viene truncado al entero en esa fuente (marcado con ≈); las 5 agencias foco tienen el dato exacto del análisis.</p>
+    <p>· <b>Las bases de clientes no coinciden entre hojas del archivo</b> (ej. Florencia: 1.577 base sep · 1.559 base oct · 1.560 en cuota/banner · 1.548 activos). Cada porcentaje usa la base de su propia hoja; la validación de la base contra el objetivo sigue pendiente, igual que en la fuente.</p>
+    <p>· Titán: 0 clientes en octubre. Activos = base menos retiros. «Sin banner» = sin banner TAPS. Causas «Mesa» = reportado por los agentes comerciales en la mesa de trabajo. Clientes foco (1.350 en las 5 agencias): 989 cumplen cuota SIN banner + 361 con banner y cerca de cumplir (≥75% de la cuota).</p>
+    <p>· «Cuota subió Oct vs Sep»: clientes cuya cuota de volumen de octubre supera la de septiembre (hoja «Cuota Oct vs Sep» del análisis).</p>
+    <p>· Fuente: Análisis Occidente Oct vs Sep y slide TAPS Occidente Octubre 2026.</p>
+  </footer>
+</div>
+
+<script>
+const META = 32;
+// Foco: datos exactos del análisis (hoja 1/3/5). oct/sep en % exactos.
+const FOCO = {
+  "Florencia":     {base:1577, baseOct:1559, sep:13.32, oct:13.41, cumpleVol:28.93, sinBanner:65.31, retiros:12, focoSinBanner:241, focoCerca:94,
+    dx:"65% de activos sin banner; 770 clientes sin banner ni cuota.", mesa:"Rotación y falta de foco.",
+    afect:"12 retiros (0,8% de la base); sin otras afectaciones."},
+  "Santuario":     {base:760, baseOct:741, sep:16.32, oct:13.36, cumpleVol:23.89, sinBanner:81.48, retiros:178, focoSinBanner:305, focoCerca:93,
+    dx:"178 retiros (7,4% de la base); 81% de activos sin banner.", mesa:"Abasto y foco en otro indicador.",
+    afect:"178 retiros (7,4% de la base): la mayor afectación por retiros del territorio."},
+  "Santa Rosa":    {base:1251, baseOct:1218, sep:13.75, oct:11.17, cumpleVol:22.66, sinBanner:71.10, retiros:10, focoSinBanner:183, focoCerca:70,
+    dx:"Sin afectaciones puntuales (10 retiros); 71% de activos sin banner.", mesa:"Falta de foco y rotación.",
+    afect:"10 retiros (0,6% de la base); sin otras afectaciones."},
+  "Tumaco":        {base:612, baseOct:609, sep:17.81, oct:10.34, cumpleVol:19.70, sinBanner:80.98, retiros:18, focoSinBanner:58, focoCerca:60,
+    dx:"550 clientes (39%) en Seguridad COK4; 81% de activos sin banner.", mesa:"Seguridad y falta de señal.",
+    afect:"550 clientes en Seguridad COK4 (39% de la base): tratar por fuera del plan banner; 18 retiros."},
+  "Puerto Berrío": {base:824, baseOct:817, sep:30.22, oct:8.81, cumpleVol:21.05, sinBanner:81.39, retiros:8, focoSinBanner:202, focoCerca:44,
+    dx:"Peor caída del territorio (-21,4 pp); 81% de activos sin banner.", mesa:"Rotación y 2 personas en vacaciones.",
+    afect:"8 retiros (0,6% de la base); sin otras afectaciones."}
+};
+// Tabla general (24 agencias). Columnas originales rotadas: «Gana Sep» = octubre (entero truncado), «%Gana Par» = septiembre.
+// sinBanner y retiros de la hoja «Banner Titan Retiros» del análisis.
+const ALL = [
+  {n:"Santa Fe de Antioquia", cuotaSube:226, base:1070, sepCli:387, sep:39.4, oct:24, sinBanner:26.28, retiros:48},
+  {n:"Espinal", cuotaSube:267,      base:1636, sepCli:620, sep:35.1, oct:34, sinBanner:48.81, retiros:427},
+  {n:"Garzón", cuotaSube:299,       base:2252, sepCli:758, sep:34.2, oct:35, sinBanner:19.39, retiros:87},
+  {n:"La Dorada", cuotaSube:209,    base:1417, sepCli:449, sep:33.1, oct:18, sinBanner:30.34, retiros:148},
+  {n:"Popayán", cuotaSube:401,      base:3574, sepCli:1105, sep:32.8, oct:24, sinBanner:31.00, retiros:65},
+  {n:"Puerto Berrío", cuotaSube:223,base:824,  sepCli:257, sep:30.22, oct:9,  sinBanner:81.39, retiros:8,  foco:true},
+  {n:"Ipiales", cuotaSube:597,      base:2072, sepCli:601, sep:29.7, oct:30, sinBanner:48.21, retiros:11},
+  {n:"Tuluá", cuotaSube:1032,        base:2600, sepCli:700, sep:28.2, oct:24, sinBanner:32.80, retiros:13},
+  {n:"Cisneros", cuotaSube:268,     base:1132, sepCli:320, sep:27.6, oct:20, sinBanner:40.47, retiros:13},
+  {n:"Bolómbolo", cuotaSube:256,    base:1549, sepCli:409, sep:26.7, oct:21, sinBanner:42.19, retiros:46},
+  {n:"Pitalito", cuotaSube:147,     base:544,  sepCli:153, sep:26.3, oct:29, sinBanner:42.27, retiros:25},
+  {n:"Mariquita", cuotaSube:406,    base:688,  sepCli:159, sep:25.4, oct:19, sinBanner:81.22, retiros:58},
+  {n:"Pasto", cuotaSube:1128,        base:4748, sepCli:1271, sep:24.5, oct:18, sinBanner:68.14, retiros:184},
+  {n:"Fusagasugá", cuotaSube:334,   base:2705, sepCli:658, sep:24.4, oct:25, sinBanner:45.22, retiros:113},
+  {n:"Tocaima", cuotaSube:167,      base:1246, sepCli:329, sep:22.1, oct:22, sinBanner:48.69, retiros:26},
+  {n:"Buga", cuotaSube:793,         base:2537, sepCli:550, sep:22.0, oct:18, sinBanner:21.65, retiros:17},
+  {n:"La Mesa", cuotaSube:358,      base:501,  sepCli:120, sep:20.2, oct:38, sinBanner:60.45, retiros:33},
+  {n:"Tumaco", cuotaSube:184,       base:612,  sepCli:125, sep:17.81, oct:10, sinBanner:80.98, retiros:18, foco:true},
+  {n:"Santuario", cuotaSube:505,    base:760,  sepCli:127, sep:16.32, oct:13, sinBanner:81.48, retiros:178, foco:true},
+  {n:"Buenaventura", cuotaSube:526, base:1840, sepCli:287, sep:15.2, oct:22, sinBanner:47.49, retiros:93},
+  {n:"Santa Rosa", cuotaSube:275,   base:1251, sepCli:174, sep:13.75, oct:11, sinBanner:71.10, retiros:10, foco:true},
+  {n:"Florencia", cuotaSube:112,    base:1577, sepCli:229, sep:13.32, oct:13, sinBanner:65.31, retiros:12, foco:true},
+  {n:"Putumayo", cuotaSube:155,     base:399,  sepCli:49,  sep:11.5, oct:22, sinBanner:78.31, retiros:103},
+  {n:"Melgar", cuotaSube:205,       base:1278, sepCli:137, sep:9.9,  oct:22, sinBanner:32.61, retiros:139}
+];
+const TOTAL = {base:38812, sep:25.44, oct:22.13};
+const FOCO_NAMES = Object.keys(FOCO);
+
+function isFoco(n){return FOCO_NAMES.includes(n);}
+function exactOct(n){return isFoco(n) ? FOCO[n].oct : null;}
+function octVal(a){return isFoco(a.n) ? FOCO[a.n].oct : a.oct;}
+function sepVal(a){return isFoco(a.n) ? FOCO[a.n].sep : a.sep;}
+function fmtPct(v, dec=1){return v.toFixed(dec).replace(".",",") + "%";}
+function fmtPP(v){return (v>0?"+":"") + v.toFixed(1).replace(".",",") + " pp";}
+function fmtInt(v){return v.toLocaleString("es-CO");}
+
+const PARAMS = new URLSearchParams(location.search);
+const INSTANT = PARAMS.get("anim")==="off";
+if(INSTANT){const st=document.createElement("style");st.textContent="*{transition:none!important;animation:none!important;}";document.head.appendChild(st);}
+let selected = PARAMS.get("agencia") || "Florencia";
+if(!ALL.some(a=>a.n===selected)) selected = "Florencia";
+let chartMetric = PARAMS.get("metric") || "oct";
+if(!["oct","sep","var"].includes(chartMetric)) chartMetric = "oct";
+let sortKey = "oct", sortDir = -1;
+
+/* ---------- Selector ---------- */
+const pillsDiv = document.getElementById("focoPills");
+FOCO_NAMES.forEach(n=>{
+  const b = document.createElement("button");
+  b.className = "pill"; b.textContent = n; b.dataset.n = n;
+  b.onclick = ()=>selectAgency(n);
+  pillsDiv.appendChild(b);
+});
+const sel = document.getElementById("agencySelect");
+ALL.slice().sort((a,b)=>a.n.localeCompare(b.n,"es")).forEach(a=>{
+  const o = document.createElement("option");
+  o.value = a.n; o.textContent = a.n + (a.foco ? " ★" : "");
+  sel.appendChild(o);
+});
+sel.onchange = ()=>selectAgency(sel.value);
+
+function selectAgency(n){
+  selected = n;
+  sel.value = n;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("active", p.dataset.n===n));
+  renderKPIs(); renderCausas(); renderChart(); renderTable();
+}
+
+/* ---------- KPI cards with count-up ---------- */
+function countUp(el, target, fmt, dur=650){
+  if(INSTANT){el.dataset.v=target; el.innerHTML=fmt(target); return;}
+  const start = parseFloat(el.dataset.v || "0");
+  el.dataset.v = target;
+  const t0 = performance.now();
+  function step(t){
+    const k = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-k,3);
+    el.innerHTML = fmt(start + (target-start)*e);
+    if(k<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function renderKPIs(){
+  const a = ALL.find(x=>x.n===selected);
+  const f = isFoco(selected) ? FOCO[selected] : null;
+  const oct = octVal(a), sep = sepVal(a);
+  const varpp = oct - sep, falta = META - oct;
+  const cards = [
+    {label:"Gana acum Octubre", val:oct, fmt:v=>fmtPct(v)+(f?"":' <small>≈</small>'), cls:"", sub:(f?fmtInt(f.octCli||209):"")+(f?" clientes":"Entero truncado en fuente")},
+    {label:"Gana acum Septiembre", val:sep, fmt:v=>fmtPct(v), cls:"neutral", sub:fmtInt(a.sepCli)+" clientes"},
+    {label:"Variación vs Sep", val:Math.abs(varpp), fmt:v=>Math.abs(varpp)<0.15?`<span>= ${Math.abs(v).toFixed(1).replace(".",",")}<small> pp</small></span>`:`<span class="${varpp>=0?"up":"down"}">${varpp>=0?"▲":"▼"} ${Math.abs(v).toFixed(1).replace(".",",")}<small> pp</small></span>`, cls:Math.abs(varpp)<0.15?"":(varpp>=0?"good":"bad"), sub:Math.abs(varpp)<0.15?"Plana vs septiembre":(varpp>=0?"Subió vs septiembre":"Cayó vs septiembre")},
+    {label:"Falta para meta 32%", val:Math.max(falta,0), fmt:v=>v.toFixed(1).replace(".",",")+"<small> pp</small>", cls:falta<=0?"good":"", sub:falta<=0?"Sobre la meta":"Para noviembre"},
+    {label:"Cumple volumen Oct", val:f?f.cumpleVol:0, fmt:v=>f?fmtPct(v):"—", cls:"neutral", sub:f?fmtInt(f.cumpleVolCli||"")+" de cuota":"Solo agencias foco"},
+    {label:"Cuota subió Oct vs Sep", val:(a.cuotaSube!=null?a.cuotaSube:NaN), fmt:v=>a.cuotaSube!=null?fmtInt(Math.round(v)):"—", cls:"", sub:"Clientes con cuota que sube (hoja cuota)"},
+    {label:"Retiros", val:a.retiros, fmt:v=>fmtInt(Math.round(v)), cls:a.retiros>50?"bad":"neutral", sub:"Clientes retirados"},
+    {label:"Clientes foco", val:f?(f.focoSinBanner+f.focoCerca):0, fmt:v=>f?fmtInt(Math.round(v)):"—", cls:"", sub:f?`${f.focoSinBanner} cumplen sin banner · ${f.focoCerca} cerca (≥75%)`:"Solo agencias foco"}
+  ];
+  if(f){ // exact clientes oct from hoja 1
+    const octCliMap = {"Florencia":209,"Santuario":99,"Santa Rosa":136,"Tumaco":63,"Puerto Berrío":72};
+    cards[0].sub = fmtInt(octCliMap[selected])+" clientes";
+    const cumpleCliMap = {"Florencia":451,"Santuario":177,"Santa Rosa":276,"Tumaco":120,"Puerto Berrío":172};
+    cards[4].sub = fmtInt(cumpleCliMap[selected])+" clientes cumplen cuota";
+  }
+  const div = document.getElementById("kpis");
+  div.innerHTML = "";
+  cards.forEach(c=>{
+    const d = document.createElement("div");
+    d.className = "kpi "+c.cls;
+    d.innerHTML = `<div class="k-label">${c.label}</div><div class="k-val"></div><div class="k-sub">${c.sub}</div>`;
+    div.appendChild(d);
+    countUp(d.querySelector(".k-val"), c.val, c.fmt);
+  });
+}
+
+/* ---------- Chart ---------- */
+function metricOf(a){
+  if(chartMetric==="oct") return octVal(a);
+  if(chartMetric==="sep") return sepVal(a);
+  return octVal(a)-sepVal(a);
+}
+function renderChart(){
+  const chart = document.getElementById("chart");
+  const data = ALL.slice().sort((x,y)=>metricOf(y)-metricOf(x));
+  const maxV = Math.max(...data.map(metricOf), META);
+  const scale = chartMetric==="var" ? Math.max(Math.ceil(Math.max(...data.map(a=>Math.abs(metricOf(a))))/5)*5, 25) : Math.max(Math.ceil(maxV/5)*5, 40);
+  // FLIP: record old positions
+  const old = {};
+  chart.querySelectorAll(".bar-row").forEach(r=>{ old[r.dataset.n] = r.getBoundingClientRect().top; });
+  chart.innerHTML = "";
+  data.forEach(a=>{
+    const v = metricOf(a);
+    const row = document.createElement("div");
+    row.className = "bar-row"+(a.n===selected?" sel":"");
+    row.dataset.n = a.n;
+    const w = Math.abs(v)/scale*100;
+    const over = chartMetric!=="var" && v>=META;
+    const barCls = over ? "over" : (a.foco ? "foco" : "");
+    const approx = (!isFoco(a.n) && chartMetric!=="sep") ? '<span class="approx">≈</span>' : '';
+    const valTxt = chartMetric==="var" ? fmtPP(v) : fmtPct(v)+approx;
+    const first = data.indexOf(a)===0;
+    row.innerHTML = `<div class="bar-name">${a.n}</div>
+      <div class="bar-track">
+        <div class="bar ${barCls}" style="width:0%"><div class="bar-val">${valTxt}</div></div>
+        ${chartMetric!=="var" ? `<div class="goal-line" style="left:${META/scale*100}%">${first?'<div class="goal-tag">Meta 32%</div>':''}</div>`:""}
+      </div>`;
+    row.onclick = ()=>selectAgency(a.n);
+    chart.appendChild(row);
+    if(INSTANT){ row.querySelector(".bar").style.width = w+"%"; } else { requestAnimationFrame(()=>{ row.querySelector(".bar").style.width = w+"%"; }); }
+    // FLIP move
+    if(old[a.n]!==undefined){
+      const dy = old[a.n] - row.getBoundingClientRect().top;
+      if(dy){ row.style.transform = `translateY(${dy}px)`; requestAnimationFrame(()=>{row.style.transform="";}); }
+    }
+  });
+}
+document.getElementById("chartToggle").addEventListener("click", e=>{
+  if(e.target.dataset.metric){
+    chartMetric = e.target.dataset.metric;
+    document.querySelectorAll("#chartToggle button").forEach(b=>b.classList.toggle("active", b===e.target));
+    renderChart();
+  }
+});
+
+/* ---------- Causes ---------- */
+function renderCausas(){
+  document.getElementById("causaAgency").textContent = "· "+selected;
+  const div = document.getElementById("causas");
+  if(isFoco(selected)){
+    const f = FOCO[selected];
+    div.innerHTML = `
+      <div class="causa-block"><h3>${selected}</h3>
+        <p><span class="tag">Diagnóstico</span>${f.dx}</p>
+        <p><span class="tag gray">Mesa de trabajo</span>${f.mesa}</p>
+        <p><span class="tag gray">Afectación puntual</span>${f.afect}</p>
+        <p><span class="tag">Clientes foco</span><b>${f.focoSinBanner + f.focoCerca}</b> = ${f.focoSinBanner} que cumplen cuota SIN banner (activar banner: ya compran el volumen, falta visibilidad y ejecución en punto de venta) + ${f.focoCerca} con banner y cerca de cumplir (≥75% de cuota; empujar el volumen faltante).</p>
+      </div>`;
+  } else {
+    const a = ALL.find(x=>x.n===selected);
+    const varpp = octVal(a)-sepVal(a);
+    div.innerHTML = `<p class="muted">${selected} no hace parte de las 5 agencias foco del diagnóstico de mesa de trabajo (cumplimiento &lt; 15%).<br><br>
+      Gana octubre: <b>${fmtPct(octVal(a))} ≈</b> · Septiembre: <b>${fmtPct(sepVal(a))}</b> · Variación: <b class="${varpp>=0?"var-pos":"var-neg"}">${fmtPP(varpp)}</b><br>
+      Cuota subió Oct vs Sep: <b>${a.cuotaSube!=null?fmtInt(a.cuotaSube)+" clientes":"—"}</b> · Retiros: <b>${a.retiros}</b></p>`;
+  }
+}
+
+/* ---------- Table ---------- */
+const COLS = [
+  {k:"n", label:"Agencia", fmt:a=>a.n, num:false},
+  {k:"base", label:"Base", fmt:a=>fmtInt(a.base)},
+  {k:"sep", label:"Gana Sep", fmt:a=>fmtPct(sepVal(a)), val:sepVal},
+  {k:"oct", label:"Gana Oct", fmt:a=>fmtPct(octVal(a))+((!isFoco(a.n))?'<span class="approx">≈</span>':''), val:octVal},
+  {k:"var", label:"Var (pp)", fmt:a=>{const v=octVal(a)-sepVal(a);return `<span class="${v>=0?"var-pos":"var-neg"}">${fmtPP(v)}</span>`;}, val:a=>octVal(a)-sepVal(a)},
+  {k:"falta", label:"Falta p/meta", fmt:a=>{const v=META-octVal(a);return v<=0?"✓":v.toFixed(1).replace(".",",")+" pp";}, val:a=>META-octVal(a)},
+  {k:"cuotaSube", label:"Cuota subió", fmt:a=>fmtInt(a.cuotaSube), val:a=>a.cuotaSube},
+  {k:"retiros", label:"Retiros", fmt:a=>a.retiros, val:a=>a.retiros},
+  {k:"foco", label:"Foco", fmt:a=>a.foco?"Sí":"—", val:a=>a.foco?1:0}
+];
+const head = document.getElementById("tblHead");
+COLS.forEach(c=>{
+  const th = document.createElement("th");
+  th.innerHTML = c.label+'<span class="arrow"></span>';
+  th.onclick = ()=>{ if(sortKey===c.k) sortDir*=-1; else {sortKey=c.k; sortDir=c.k==="n"?1:-1;} renderTable(); };
+  head.appendChild(th);
+});
+document.getElementById("tblFilter").oninput = renderTable;
+document.getElementById("tblFocoOnly").onchange = renderTable;
+
+function renderTable(){
+  const q = document.getElementById("tblFilter").value.trim().toLowerCase();
+  const onlyFoco = document.getElementById("tblFocoOnly").checked;
+  let rows = ALL.filter(a=>(!q || a.n.toLowerCase().includes(q)) && (!onlyFoco || a.foco));
+  const col = COLS.find(c=>c.k===sortKey);
+  const val = c => col.val ? col.val(c) : c.n;
+  rows.sort((x,y)=>{
+    const vx=val(x), vy=val(y);
+    return (typeof vx==="string" ? vx.localeCompare(vy,"es") : vx-vy) * sortDir;
+  });
+  head.querySelectorAll("th").forEach((th,i)=>{
+    th.querySelector(".arrow").textContent = COLS[i].k===sortKey ? (sortDir===1?"▲":"▼") : "";
+  });
+  const body = document.getElementById("tblBody");
+  body.innerHTML = "";
+  rows.forEach(a=>{
+    const tr = document.createElement("tr");
+    tr.className = (a.foco?"foco ":"")+(a.n===selected?"sel":"");
+    tr.innerHTML = COLS.map(c=>`<td>${c.fmt(a)}</td>`).join("");
+    tr.onclick = ()=>selectAgency(a.n);
+    body.appendChild(tr);
+  });
+  if(!q && !onlyFoco){
+    const tr = document.createElement("tr");
+    tr.className = "total";
+    tr.innerHTML = `<td>Total general</td><td>${fmtInt(TOTAL.base)}</td><td>${fmtPct(TOTAL.sep)}</td><td>${fmtPct(TOTAL.oct)}</td><td><span class="var-neg">${fmtPP(TOTAL.oct-TOTAL.sep)}</span></td><td>${(META-TOTAL.oct).toFixed(1).replace(".",",")} pp</td><td>—</td><td>—</td><td>—</td>`;
+    body.appendChild(tr);
+  }
+}
+
+document.querySelectorAll("#chartToggle button").forEach(b=>b.classList.toggle("active", b.dataset.metric===chartMetric));
+selectAgency(selected);
+</script>
+</body>
+</html>
